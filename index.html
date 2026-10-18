@@ -1355,6 +1355,21 @@
 /* SVG di dalam tombol */
 .mc-btn-sm svg, .action-btn svg { pointer-events: none; }
 
+
+/* v9.2: overlay loading ganti grafis */
+#gfx-loading {
+  position: fixed; inset: 0; z-index: 9999; display: none;
+  flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  background: rgba(10, 12, 18, 0.85); color: #fff;
+  font-size: 15px; font-weight: 600;
+}
+#gfx-loading .gfx-spin {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 4px solid rgba(255,255,255,0.2); border-top-color: #F5B82E;
+  animation: gfx-spin 0.8s linear infinite;
+}
+@keyframes gfx-spin { to { transform: rotate(360deg); } }
+
 #boss-fill { transition: none !important; transform-origin: left center; will-change: transform; }
 
   </style>
@@ -2219,6 +2234,15 @@
         if (key === 'invertY') val = !!val;
         gameSettings[key] = val;
         saveSettings();
+        if (key === 'graphics') {
+          /* v9.2: tampilkan loading dulu, kasih browser 1 frame, baru terapkan */
+          try { showGfxLoading(true); } catch (e) {}
+          setTimeout(() => {
+            try { applySettings(); refreshSettingsUI(); } catch (e) {}
+            setTimeout(() => { try { showGfxLoading(false); } catch (e) {} }, 300);
+          }, 50);
+          return;
+        }
         applySettings();
         refreshSettingsUI();
         try { if ((key === 'musicVol' || key === 'masterVol') && typeof userAudio !== 'undefined' && userAudio) userAudio.volume = (gameSettings.masterVol / 100) * ((gameSettings.musicVol != null ? gameSettings.musicVol : 70) / 100); } catch (e) {}
@@ -2266,18 +2290,26 @@
           if (typeof renderer === 'undefined') return;
           /* Sodium override: kalau Sodium aktif, Sodium yang atur shadow */
           if (typeof sodiumPerf !== 'undefined' && sodiumPerf > 0) return;
-          /* v9.1 FIX: jangan toggle shadowMap.enabled + needsUpdate (bikin gelap di GPU Android).
-             Pakai autoUpdate=false untuk mode cepat — tanpa recompile shader. */
+          /* v9.2 FIX: JANGAN PERNAH ganti shadowMap.type/enabled di runtime (wajib recompile shader -> layar item).
+             Hanya toggle autoUpdate: aman, instan, tanpa recompile. */
           if (mode === 'fast') {
             renderer.shadowMap.autoUpdate = false;
-            renderer.shadowMap.needsUpdate = false;
           } else {
-            renderer.shadowMap.enabled = true;
             renderer.shadowMap.autoUpdate = true;
-            renderer.shadowMap.needsUpdate = true;
-            renderer.shadowMap.type = (mode === 'vibrant') ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap;
+            renderer.shadowMap.needsUpdate = true; /* refresh shadow sekali, bukan recompile */
           }
         } catch (e) {}
+      }
+      /* Overlay loading kecil untuk ganti grafis */
+      function showGfxLoading(show) {
+        let el = document.getElementById('gfx-loading');
+        if (!el) {
+          el = document.createElement('div');
+          el.id = 'gfx-loading';
+          el.innerHTML = '<div class="gfx-spin"></div><div>Menerapkan grafis...</div>';
+          document.body.appendChild(el);
+        }
+        el.style.display = show ? 'flex' : 'none';
       }
       function applySettings() {
         try {
@@ -16448,6 +16480,51 @@
         for (const k of [...loadedChunks.keys()]) { try { removeChunk(k); } catch (e) {} }
         updateStreamingChunks(999);
       }
+      /* v9.2: bangun chunk awal secara progresif (tidak freeze) dengan progress bar */
+      function buildInitialChunksProgressive(onDone) {
+        try {
+          const playerCx = Math.floor(player.x / CHUNK_SIZE);
+          const playerCz = Math.floor(player.z / CHUNK_SIZE);
+          const missing = [];
+          for (let dx = -RENDER_DIST; dx <= RENDER_DIST; dx++) {
+            for (let dz = -RENDER_DIST; dz <= RENDER_DIST; dz++) {
+              const cx = playerCx + dx, cz = playerCz + dz;
+              const key = CK(cx, cz);
+              if (!loadedChunks.has(key)) missing.push({ cx, cz, d: dx * dx + dz * dz });
+            }
+          }
+          missing.sort((a, b) => a.d - b.d);
+          const total = missing.length;
+          let done = 0;
+          const barEl = document.querySelector('#world-loading .wl-bar');
+          function step() {
+            try {
+              const n = Math.min(3, missing.length);
+              for (let i = 0; i < n; i++) {
+                const m = missing.shift();
+                try { buildChunk(m.cx, m.cz); } catch (e) {}
+                done++;
+              }
+              if (barEl) {
+                const pct = total > 0 ? Math.round((done / total) * 100) : 100;
+                barEl.style.width = pct + '%';
+                barEl.style.marginLeft = '0';
+                barEl.style.animation = 'none';
+              }
+              const tipEl = document.getElementById('wl-tip');
+              if (tipEl && total > 0) tipEl.textContent = 'Memuat chunk ' + done + '/' + total + '...';
+              if (missing.length > 0) {
+                setTimeout(step, 16); /* yield ke browser biar animasi jalan */
+              } else {
+                if (barEl) { barEl.style.width = '100%'; }
+                if (onDone) onDone();
+              }
+            } catch (e) { if (onDone) onDone(); }
+          }
+          if (total === 0) { if (onDone) onDone(); return; }
+          step();
+        } catch (e) { if (onDone) onDone(); }
+      }
 
       function applyWorldData(d) {
         resetWorldState();
@@ -16630,22 +16707,24 @@
         } catch (e) { return true; }
       }
 
-      function startNewWorld(meta) {
+      function startNewWorld(meta, onDone) {
         resetWorldState();
         difficulty = DIFF_MUL[meta.diff] != null ? meta.diff : 'NORMAL';
         player.gameMode = MODE_LABEL[meta.mode] ? meta.mode : 'SURVIVAL';
         findSafeSpawn();
         player.hp = player.maxHp;
-        rebuildAllChunks();
-        /* SPIDER-MAN MOD: bangun Dead City (hanya kalau mod aktif) */
-        try { if (isSpidermanModActive()) { generateDeadCity(); rebuildAllChunks(); } } catch (e) {}
-        updateHotbarUI(); renderStatusBars(); updateModeBadge();
-        /* Kasih tau pemain lokasi kota mati (hanya kalau mod aktif) */
-        try {
-          if (isSpidermanModActive()) {
-            setTimeout(() => showMobAlert('🏙️ Kota Mati ada di koordinat X:500, Z:500! Pakai Jaring Spider-Man 🕸️ buat ayunan!'), 3000);
-          }
-        } catch (e) {}
+        /* v9.2: chunk dibangun progresif agar loading tidak freeze */
+        buildInitialChunksProgressive(() => {
+          /* SPIDER-MAN MOD: bangun Dead City (hanya kalau mod aktif) */
+          try { if (isSpidermanModActive()) { generateDeadCity(); rebuildAllChunks(); } } catch (e) {}
+          updateHotbarUI(); renderStatusBars(); updateModeBadge();
+          try {
+            if (isSpidermanModActive()) {
+              setTimeout(() => showMobAlert('🏙️ Kota Mati ada di koordinat X:500, Z:500! Pakai Jaring Spider-Man 🕸️ buat ayunan!'), 3000);
+            }
+          } catch (e) {}
+          if (onDone) onDone();
+        });
       }
 
       function updateModeBadge() {
@@ -16695,16 +16774,27 @@
             document.getElementById('gameover-screen').style.display = 'none';
             let data = null;
             if (!isNew) { try { data = JSON.parse(localStorage.getItem(rcSaveKey(meta.id))); } catch (e) { data = null; } }
-            if (data && data.v === 1) applyWorldData(data);
-            else { startNewWorld(meta); }
-            const list = getWorldList();
-            const w = list.find(x => x.id === meta.id);
-            if (w) { w.lastPlayed = Date.now(); setWorldList(list); }
-            window.startRakaCraft();
-            if (typeof rebuildCropSet === 'function') rebuildCropSet(); // FARMING: daftar ulang posisi tanaman
-            if (typeof rebuildSaplingTimers === 'function') rebuildSaplingTimers(); // BIBIT: daftar ulang timer bibit
-            if (typeof rebuildSpawnerSet === 'function') rebuildSpawnerSet(); // SPAWNER: daftar ulang posisi spawner
-            saveWorld();
+            const finishEnter = () => {
+              try {
+                const list = getWorldList();
+                const w = list.find(x => x.id === meta.id);
+                if (w) { w.lastPlayed = Date.now(); setWorldList(list); }
+                window.startRakaCraft();
+                if (typeof rebuildCropSet === 'function') rebuildCropSet();
+                if (typeof rebuildSaplingTimers === 'function') rebuildSaplingTimers();
+                if (typeof rebuildSpawnerSet === 'function') rebuildSpawnerSet();
+                saveWorld();
+              } catch (e2) { console.error('finishEnter:', e2); }
+              finally { setTimeout(hideWorldLoading, 500); }
+            };
+            if (data && data.v === 1) {
+              applyWorldData(data);
+              /* world lama: chunk juga dibangun progresif */
+              buildInitialChunksProgressive(finishEnter);
+            } else {
+              startNewWorld(meta, finishEnter);
+            }
+            return; /* v9.2: sisa flow pindah ke finishEnter */
           } catch (err) {
             try {
               console.error('enterWorld gagal:', err);
@@ -16712,8 +16802,7 @@
               document.getElementById('world-screen').style.display = 'flex';
               try { renderWorldList(); } catch (e2) {}
             } catch (e3) {}
-          } finally {
-            setTimeout(hideWorldLoading, 500);
+            try { hideWorldLoading(); } catch (e4) {}
           }
         }, 80));
       }
