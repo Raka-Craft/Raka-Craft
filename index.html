@@ -2266,22 +2266,16 @@
           if (typeof renderer === 'undefined') return;
           /* Sodium override: kalau Sodium aktif, Sodium yang atur shadow */
           if (typeof sodiumPerf !== 'undefined' && sodiumPerf > 0) return;
+          /* v9.1 FIX: jangan toggle shadowMap.enabled + needsUpdate (bikin gelap di GPU Android).
+             Pakai autoUpdate=false untuk mode cepat — tanpa recompile shader. */
           if (mode === 'fast') {
-            renderer.shadowMap.enabled = false;
-          } else if (mode === 'vibrant') {
+            renderer.shadowMap.autoUpdate = false;
+            renderer.shadowMap.needsUpdate = false;
+          } else {
             renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-          } else { // fancy
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFShadowMap;
-          }
-          /* Terapkan ke semua material (butuh update) — handle array (blok punya 6 material) */
-          if (typeof scene !== 'undefined') {
-            scene.traverse(obj => {
-              if (!obj.material) return;
-              const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
-              mats.forEach(m => { if (m) m.needsUpdate = true; });
-            });
+            renderer.shadowMap.autoUpdate = true;
+            renderer.shadowMap.needsUpdate = true;
+            renderer.shadowMap.type = (mode === 'vibrant') ? THREE.PCFSoftShadowMap : THREE.PCFShadowMap;
           }
         } catch (e) {}
       }
@@ -5632,7 +5626,7 @@
       // === 4. THREE.JS ENGINE, CHUNK & INSTANCED RENDERER ===
       const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: 'high-performance' });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.3)); /* v9.1: hemat piksel untuk fullscreen */
       // Shadow biar keren (map 1024, range terbatas biar HP nggak ngelag)
       renderer.shadowMap.enabled = true;
       renderer.shadowMap.type = THREE.PCFShadowMap;
