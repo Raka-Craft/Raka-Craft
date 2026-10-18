@@ -1148,6 +1148,213 @@
 .mc-btn, .mc-btn-sm, .mc-btn-green, .mc-btn-red { will-change: transform, opacity; transition: transform .12s var(--vx-ease) !important; }
 .mc-btn:active, .mc-btn-green:active, .mc-btn-red:active { transform: scale(0.92); }
 #break-progress-wrap { will-change: transform, opacity; }
+
+/* ============================================================
+   === REFACTOR v9: TOTAL UI OVERHAUL ===
+   - Icon-only HUD buttons (38px squircle)
+   - Main menu modern, world select cards
+   - Hotbar 44px slots, status bar fix
+   - Joystick & arc action cluster
+   ============================================================ */
+/* --- Top HUD: rapat ke tepi atas --- */
+#top-hud {
+  top: 10px !important;
+  padding-top: 0 !important;
+}
+#top-hud .hud-chip {
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 12px !important;
+  padding: 0 14px !important;
+}
+#top-hud .hud-chip .badge { color: var(--vx-gold, #F5B82E) !important; font-weight: 800; }
+/* Icon-only circular buttons 38px */
+#top-hud .hud-controls .mc-btn-sm {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  border-radius: 10px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 0 !important;
+}
+#top-hud .hud-controls .mc-btn-sm svg { width: 20px; height: 20px; }
+#top-hud .hud-controls .mc-btn-sm span.lbl { display: none !important; }
+/* --- Hotbar: pas memeluk 9 slot --- */
+#hotbar {
+  padding: 5px !important;
+  gap: 4px !important;
+}
+.hotbar-slot {
+  width: 44px !important;
+  height: 44px !important;
+  min-width: 44px !important;
+  min-height: 44px !important;
+}
+/* --- Status bars: tidak terpotong --- */
+#bars-container {
+  height: 24px !important;
+  overflow: visible !important;
+  bottom: calc(8px + 54px + max(1.5vmin, env(safe-area-inset-bottom))) !important;
+}
+#bars-container .icon-row { overflow: visible !important; line-height: 1 !important; }
+/* --- Joystick elegan --- */
+#dpad {
+  background: rgba(15, 20, 28, 0.45) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.18) !important;
+}
+#joy-knob {
+  background: rgba(255,255,255,0.25) !important;
+  border: 1.5px solid rgba(255,255,255,0.4) !important;
+  backdrop-filter: none !important;
+}
+/* --- Action buttons: SVG putih bersih --- */
+.action-btn { color: #fff !important; }
+.action-btn svg { width: 24px; height: 24px; pointer-events: none; }
+#btn-sprint, #btn-sneak { width: 46px !important; height: 46px !important; }
+/* --- MAIN MENU MODERN --- */
+#title-screen {
+  background: linear-gradient(180deg, #0c1220 0%, #131c2e 45%, #0a0e14 100%) !important;
+}
+.xcraft-logo {
+  font-size: 15vmin !important;
+  letter-spacing: 0.8vmin !important;
+  background: linear-gradient(180deg, #ffffff 0%, #e8e8e8 30%, #b0b0b0 50%, #d0d0d0 70%, #f5f5f5 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  filter: drop-shadow(0 4px 0 #2a2a2a) drop-shadow(0 8px 0 #111) drop-shadow(0 12px 24px rgba(0,0,0,0.6)) !important;
+}
+.xcraft-splash {
+  position: static !important;
+  display: inline-block !important;
+  transform: rotate(-4deg) !important;
+  background: linear-gradient(135deg, #F5B82E, #C88A12) !important;
+  color: #1a1200 !important;
+  font-size: 2.6vmin !important;
+  font-weight: 800 !important;
+  padding: 1vmin 3vmin !important;
+  border-radius: 999px !important;
+  text-shadow: none !important;
+  box-shadow: 0 4px 14px rgba(245,184,46,0.4) !important;
+  margin-top: 2vmin !important;
+  white-space: nowrap !important;
+}
+.xcraft-logo-wrap { display: flex !important; flex-direction: column !important; align-items: center !important; }
+.title-buttons { gap: 1.6vmin !important; }
+.mc-title-btn {
+  width: min(320px, 72vw) !important;
+  max-width: 320px !important;
+  height: 50px !important;
+  border-radius: 12px !important;
+  font-size: 3.6vmin !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 2vmin !important;
+  border: 1px solid rgba(255,255,255,0.25) !important;
+  outline: none !important;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4) !important;
+  transition: transform .12s cubic-bezier(0.22,1,0.36,1), filter .12s !important;
+}
+.mc-title-btn svg { width: 22px; height: 22px; }
+.mc-title-btn:active { transform: scale(0.96) !important; }
+.mc-title-btn.play {
+  background: linear-gradient(135deg, #10B981, #059669) !important;
+  box-shadow: 0 4px 0 #047857, 0 8px 20px rgba(16,185,129,0.35) !important;
+}
+.mc-title-btn:not(.play) {
+  background: #1E2430 !important;
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: 0 4px 0 #0F131A !important;
+}
+/* Character card modern */
+#title-char-wrap {
+  background: rgba(18, 22, 31, 0.75) !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  padding: 2vmin !important;
+}
+#title-char-canvas { border: none !important; border-radius: 10px !important; }
+.skin-change-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(245,184,46,0.15); color: #F5B82E;
+  border: 1px solid rgba(245,184,46,0.4); border-radius: 999px;
+  padding: 8px 18px; font-size: 12px; font-weight: 700;
+  cursor: pointer; margin-top: 8px; font-family: inherit;
+}
+/* Footer pills */
+.title-corner { display: none !important; }
+.title-profile-pill {
+  position: absolute; z-index: 1;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(18,22,31,0.8); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 999px; padding: 8px 16px; color: #fff;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.title-profile-pill svg { width: 16px; height: 16px; }
+.title-ver {
+  position: absolute; z-index: 1; bottom: 12px; right: 16px;
+  color: rgba(255,255,255,0.45); font-size: 11px; font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.title-coins-pill {
+  position: absolute; z-index: 1; top: 12px; right: 16px;
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(18,22,31,0.8); border: 1px solid rgba(245,184,46,0.35);
+  border-radius: 999px; padding: 7px 14px; color: #F5B82E;
+  font-size: 13px; font-weight: 700;
+}
+/* --- WORLD SELECT MODERN --- */
+#world-screen[style*="flex"] {
+  flex-direction: column !important;
+  align-items: center !important; justify-content: center !important;
+}
+.world-card-main {
+  width: 90%; max-width: 680px; height: 62vh;
+  background: rgba(15, 19, 26, 0.85);
+  border-radius: 16px; border: 1px solid rgba(255,255,255,0.1);
+  padding: 24px; display: flex; flex-direction: column;
+  backdrop-filter: none;
+}
+.world-card-main h2 {
+  font-size: 20px; font-weight: 800; margin: 0 0 16px 0;
+  display: flex; align-items: center; gap: 10px; color: #fff;
+}
+.world-card-main h2 svg { width: 24px; height: 24px; color: #F5B82E; }
+#world-list { flex: 1; overflow-y: auto; margin-bottom: 16px; }
+.world-empty {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+  color: #9CA3AF; text-align: center;
+}
+.world-empty svg { width: 72px; height: 72px; color: #323846; }
+.world-empty h3 { font-size: 17px; color: #F3F4F6; margin: 0; font-weight: 700; }
+.world-empty p { font-size: 13px; margin: 0; max-width: 300px; line-height: 1.6; }
+.world-btn-row {
+  display: flex !important; gap: 10px !important; flex-wrap: wrap;
+}
+.world-btn-row .mc-btn {
+  flex: 1; min-width: 120px; border-radius: 10px !important;
+  border: none !important; outline: none !important;
+  padding: 12px 8px !important; font-size: 14px !important; font-weight: 700 !important;
+  display: inline-flex !important; align-items: center !important; justify-content: center !important;
+  gap: 8px !important; cursor: pointer; font-family: inherit;
+  transition: transform .12s cubic-bezier(0.22,1,0.36,1), opacity .12s !important;
+}
+.world-btn-row .mc-btn svg { width: 17px; height: 17px; }
+.world-btn-row .mc-btn:active { transform: scale(0.95); }
+.world-btn-row .mc-btn.disabled { opacity: 0.4; pointer-events: none; }
+.btn-play { background: linear-gradient(135deg, #10B981, #059669) !important; color: #fff !important; box-shadow: 0 3px 0 #047857 !important; }
+.btn-create { background: linear-gradient(135deg, #F5B82E, #C88A12) !important; color: #1a1200 !important; box-shadow: 0 3px 0 #8a5f0a !important; }
+.btn-danger { background: #3a1d22 !important; color: #E03E52 !important; border: 1px solid rgba(224,62,82,0.35) !important; }
+.btn-ghost { background: #1E2430 !important; color: #9CA3AF !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+/* SVG di dalam tombol */
+.mc-btn-sm svg, .action-btn svg { pointer-events: none; }
+
 #boss-fill { transition: none !important; transform-origin: left center; will-change: transform; }
 
   </style>
@@ -1198,14 +1405,14 @@
         <span id="time-clock" style="font-size:10px; color:#aaa;">(01:00)</span>
       </div>
       <div class="hud-controls">
-        <button class="mc-btn-sm" onclick="toggleCameraView()">📷 Kamera</button>
-        <button class="mc-btn-sm" onclick="openInventory()">🎒 Tas</button>
-        <button class="mc-btn-sm" onclick="openSkinPicker()">🎨 Skin</button>
-        <button class="mc-btn-sm" onclick="interactBlock()">✋ Interaksi</button>
-        <button class="mc-btn-sm" id="mp-chat-btn" style="display:none;" onclick="openMpChat()">💬 <span id="mp-chat-badge"></span></button>
-        <button class="mc-btn-sm" onclick="openSpChat()">💬</button>
-        <button class="mc-btn-sm" id="hud-music-btn" onclick="openMusicPlayer()">🎵</button>
-        <button class="mc-btn-sm" onclick="openMenu()">⚙️</button>
+        <button class="mc-btn-sm" id="hb-cam" onclick="toggleCameraView()" title="Kamera"></button>
+        <button class="mc-btn-sm" id="hb-inv" onclick="openInventory()" title="Tas"></button>
+        <button class="mc-btn-sm" id="hb-skin" onclick="openSkinPicker()" title="Skin"></button>
+        <button class="mc-btn-sm" id="hb-hand" onclick="interactBlock()" title="Interaksi"></button>
+        <button class="mc-btn-sm" id="mp-chat-btn" style="display:none;" onclick="openMpChat()" title="Chat"></button>
+        <button class="mc-btn-sm" id="hb-chat" onclick="openSpChat()" title="Chat"></button>
+        <button class="mc-btn-sm" id="hud-music-btn" onclick="openMusicPlayer()" title="Musik"></button>
+        <button class="mc-btn-sm" id="hb-gear" onclick="openMenu()" title="Pengaturan"></button>
       </div>
     </div>
 
@@ -1249,15 +1456,15 @@
     </div>
 
     <!-- Right Action Buttons -->
-    <div class="action-btn" id="btn-jump">▲</div>
-    <div class="action-btn" id="btn-mine">⛏️</div>
-    <div class="action-btn" id="btn-place">🧱</div>
-    <div class="action-btn" id="btn-fly-up">⏫</div>
-    <div class="action-btn" id="btn-fly-dn">⏬</div>
-    <div class="action-btn" id="btn-sprint">💨</div>
-    <div class="action-btn" id="btn-attack">🗡️</div>
-    <div class="action-btn" id="btn-sneak">🧎</div>
-    <div class="action-btn" id="btn-eat" style="display:none;">🍖</div>
+    <div class="action-btn" id="btn-jump"></div>
+    <div class="action-btn" id="btn-mine"></div>
+    <div class="action-btn" id="btn-place"></div>
+    <div class="action-btn" id="btn-fly-up"></div>
+    <div class="action-btn" id="btn-fly-dn"></div>
+    <div class="action-btn" id="btn-sprint"></div>
+    <div class="action-btn" id="btn-attack"></div>
+    <div class="action-btn" id="btn-sneak"></div>
+    <div class="action-btn" id="btn-eat" style="display:none;"></div>
     <div id="portal-overlay"></div>
 
     <!-- Account Screen -->
@@ -1276,36 +1483,40 @@
 
     <!-- Title Screen -->
     <div id="title-screen" style="display:none;">
-      <div class="title-corner tr">🪙 <span id="title-coins">0</span></div>
-      <button class="title-corner" id="title-music-btn" onclick="openMusicPlayer()" style="top:2vmin; left:2vmin; cursor:pointer; font-family:inherit;">🎵</button>
+      <div class="title-coins-pill"><span style="font-size:15px;">&#9679;</span><span id="title-coins">0</span></div>
+      <button class="title-profile-pill" style="top:12px; left:16px;" onclick="showAccountScreen()"><span id="ti-user-ic"></span><span id="title-username">-</span></button>
       <div class="xcraft-logo-wrap">
         <div class="xcraft-logo">XCRAFT</div>
         <div class="xcraft-splash">100% Buatan Raka!</div>
       </div>
       <div class="title-buttons">
-        <button class="mc-title-btn play" onclick="showWorldSelect()">Play</button>
-        <button class="mc-title-btn" onclick="openMenu(true)">Settings</button>
-        <button class="mc-title-btn" onclick="openMarketplace()">Marketplace</button>
+        <button class="mc-title-btn play" onclick="showWorldSelect()"><span id="ti-play-ic"></span>Play</button>
+        <button class="mc-title-btn" onclick="openMenu(true)"><span id="ti-gear-ic"></span>Settings</button>
+        <button class="mc-title-btn" onclick="openMarketplace()"><span id="ti-cube-ic"></span>Marketplace</button>
       </div>
-      <!-- Preview karakter 3D di kanan (ala Minecraft, ketuk buat ganti skin!) -->
       <div id="title-char-wrap" style="position:absolute; right:4vmin; top:50%; transform:translateY(-50%); text-align:center; z-index:5;">
-        <canvas id="title-char-canvas" width="120" height="170" style="border:2px solid rgba(255,255,255,0.3); border-radius:10px; background:rgba(0,0,0,0.35); touch-action:none; cursor:grab;"></canvas>
-        <div style="font-size:11px; color:#ffeb3b; margin-top:2px; text-shadow:1px 1px 0 #000;">👆 Ketuk buat ganti skin!</div>
+        <canvas id="title-char-canvas" width="120" height="170" style="border-radius:10px; background:rgba(0,0,0,0.35); touch-action:none; cursor:grab;"></canvas>
+        <br><button class="skin-change-btn" onclick="openSkinPicker()"><span id="ti-pal-ic"></span>Ganti Skin</button>
       </div>
-      <button class="title-profile-btn" onclick="showAccountScreen()">👤 <span id="title-username">-</span></button>
-      <div class="title-corner bl">© Raka</div>
-      <div class="title-corner br">v3.2</div>
+      <div class="title-ver">v3.2 &bull; &copy; Raka</div>
     </div>
 
     <!-- World Select -->
     <div id="world-screen">
-      <h2>🌍 Pilih World</h2>
-      <div id="world-list"></div>
-      <div class="world-btn-row">
-        <button class="mc-btn mc-btn-green" onclick="playSelectedWorld()">▶ Mainkan</button>
-        <button class="mc-btn" onclick="showCreateWorld()">＋ Bikin Baru</button>
-        <button class="mc-btn" onclick="deleteSelectedWorld()">🗑 Hapus</button>
-        <button class="mc-btn" onclick="backToTitle()">← Kembali</button>
+      <div class="world-card-main">
+        <h2><span id="ws-globe-ic"></span>Pilih World</h2>
+        <div id="world-list"></div>
+        <div class="world-empty" id="world-empty" style="display:none;">
+          <span id="ws-empty-ic"></span>
+          <h3>Belum ada world</h3>
+          <p>Bikin world baru untuk mulai berpetualang di dunia voxel XCraft!</p>
+        </div>
+        <div class="world-btn-row">
+          <button class="mc-btn btn-play" id="ws-btn-play" onclick="playSelectedWorld()"><span id="ws-play-ic"></span>Mainkan</button>
+          <button class="mc-btn btn-create" onclick="showCreateWorld()"><span id="ws-plus-ic"></span>Bikin Baru</button>
+          <button class="mc-btn btn-danger" id="ws-btn-del" onclick="deleteSelectedWorld()"><span id="ws-trash-ic"></span>Hapus</button>
+          <button class="mc-btn btn-ghost" onclick="backToTitle()"><span id="ws-back-ic"></span>Kembali</button>
+        </div>
       </div>
     </div>
 
@@ -1922,6 +2133,80 @@
       /* ===== XCraft Settings (tersimpan, semua berfungsi) ===== */
       const DEFAULT_SETTINGS = { fov: 70, brightness: 100, renderDist: 2, cameraMode: 1, graphics: 'fancy', masterVol: 100, sfxVol: 100, musicVol: 70, sensitivity: 50, invertY: false };
       // === 3. GAME CONFIG & STATE MANAGEMENT ===
+      /* === REFACTOR v9 PILAR 2: UI_ICONS - SVG game modern, tanpa emoji OS === */
+      const UI_ICONS = {
+        sword: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/></svg>',
+        pickaxe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a7 7 0 0 0-7 7c0 1.5.5 3 1.5 4"/><path d="M12 2a7 7 0 0 1 7 7c0 1.5-.5 3-1.5 4"/><path d="M12 2v20"/><path d="M8 22h8"/></svg>',
+        cube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>',
+        jump: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>',
+        sprint: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+        crouch: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2"/><path d="M13 8v5"/><path d="M13 10l-4 2"/><path d="M13 13l-3 7"/><path d="M13 13l4 3 2 5"/></svg>',
+        backpack: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 7h12l2 13H4L6 7z"/><path d="M9 7a3 3 0 0 1 6 0"/><path d="M9 12v4"/><path d="M15 12v4"/></svg>',
+        camera: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>',
+        palette: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.9 0 1.6-.7 1.6-1.7 0-.4-.2-.8-.4-1.1-.3-.3-.4-.7-.4-1.1a1.6 1.6 0 0 1 1.6-1.7h2c2.6 0 4.7-2.1 4.7-4.7C22 6.5 17.5 2 12 2z"/></svg>',
+        hand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 11V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/><path d="M14 10V4a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2 2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.9-2.3l-3.4-3.85a2 2 0 0 1 3-2.65L6 15"/></svg>',
+        chat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+        gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>',
+        globe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+        plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>',
+        trash: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+        play: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5.14v13.72c0 .8.87 1.3 1.56.88l10.5-6.86a1.03 1.03 0 0 0 0-1.76L9.56 4.26A1.03 1.03 0 0 0 8 5.14z"/></svg>',
+        user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+        music: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+        x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+        check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>',
+        back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>'
+      };
+      function setIcon(el, name, size) {
+        if (typeof el === 'string') el = document.getElementById(el);
+        if (!el || !UI_ICONS[name]) return;
+        var sz = size || 22;
+        el.innerHTML = UI_ICONS[name].replace('<svg ', '<svg width="' + sz + '" height="' + sz + '" ');
+      }
+
+      /* === REFACTOR v9: pasang semua ikon SVG saat init === */
+      function initUIIcons() {
+        try {
+          // HUD buttons
+          setIcon('hb-cam', 'camera', 20); setIcon('hb-inv', 'backpack', 20);
+          setIcon('hb-skin', 'palette', 20); setIcon('hb-hand', 'hand', 20);
+          setIcon('mp-chat-btn', 'chat', 20); setIcon('hb-chat', 'chat', 20);
+          setIcon('hud-music-btn', 'music', 20); setIcon('hb-gear', 'gear', 20);
+          // Action buttons
+          setIcon('btn-jump', 'jump', 26); setIcon('btn-mine', 'pickaxe', 24);
+          setIcon('btn-place', 'cube', 24); setIcon('btn-attack', 'sword', 24);
+          setIcon('btn-sprint', 'sprint', 22); setIcon('btn-sneak', 'crouch', 22);
+          setIcon('btn-eat', 'hand', 22);
+          // fly buttons pakai jump icon (arah beda via CSS rotate)
+          var fu = document.getElementById('btn-fly-up');
+          var fd = document.getElementById('btn-fly-dn');
+          if (fu && !fu.innerHTML) setIcon(fu, 'jump', 24);
+          if (fd && !fd.innerHTML) { setIcon(fd, 'jump', 24); fd.style.transform = 'rotate(180deg)'; }
+          // Title screen
+          setIcon('ti-play-ic', 'play', 22); setIcon('ti-gear-ic', 'gear', 20);
+          setIcon('ti-cube-ic', 'cube', 20); setIcon('ti-pal-ic', 'palette', 14);
+          setIcon('ti-user-ic', 'user', 16);
+          // World select
+          setIcon('ws-globe-ic', 'globe', 24); setIcon('ws-empty-ic', 'globe', 72);
+          setIcon('ws-play-ic', 'play', 17); setIcon('ws-plus-ic', 'plus', 17);
+          setIcon('ws-trash-ic', 'trash', 17); setIcon('ws-back-ic', 'back', 17);
+        } catch (e) { console.warn('initUIIcons:', e); }
+      }
+      if (document.readyState !== "loading") { try { initUIIcons(); } catch (e) {} }
+      else { document.addEventListener("DOMContentLoaded", function() { try { initUIIcons(); } catch (e) {} }); }
+      /* Update state tombol world select (disabled jika kosong) */
+      function refreshWorldButtons() {
+        try {
+          var list = document.getElementById('world-list');
+          var empty = document.getElementById('world-empty');
+          var has = list && list.children.length > 0;
+          if (empty) empty.style.display = has ? 'none' : 'flex';
+          var pb = document.getElementById('ws-btn-play');
+          var db = document.getElementById('ws-btn-del');
+          if (pb) pb.classList.toggle('disabled', !has);
+          if (db) db.classList.toggle('disabled', !has);
+        } catch (e) {}
+      }
       let gameSettings = { ...DEFAULT_SETTINGS };
       try {
         const saved = JSON.parse(localStorage.getItem('xcraft_settings') || '{}');
@@ -16463,6 +16748,8 @@
       }
 
       window.showWorldSelect = function() {
+        try { initUIIcons(); } catch (e) {}
+        setTimeout(refreshWorldButtons, 100);
         try {
           document.getElementById('title-screen').style.display = 'none';
           document.getElementById('create-world-screen').style.display = 'none';
